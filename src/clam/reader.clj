@@ -4,12 +4,12 @@
 
 (defn read-row [text delimiter]
 
-  (defn read-field [result ch]
+  (defn build-field-vec [result ch]
     (let [ch-str (str ch)]
       (if (= ch-str delimiter)
         result
         (cons ch-str result))))
 
-  [(apply str (reverse (reduce read-field [] text)))]
+  [(apply str (reverse (reduce build-field-vec [] text)))]
 
 )
