@@ -3,5 +3,6 @@
   :url "https://github.com/mowat27/clam"
   :license {:name "MIT Licence"
             :url "http://copyfree.org/licenses/mit/license.txt"}
-  :dependencies [[org.clojure/clojure "1.4.0"]]
+  :dependencies [[org.clojure/clojure "1.4.0"]
+                 [midje "1.4.0"]]
   :dev-dependencies [[midje "1.4.0"]])
