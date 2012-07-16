@@ -14,4 +14,13 @@
   (parse-delimited "f1|" "|") => ["f1"]
   (parse-delimited "f1," ",") => ["f1"]
   (parse-delimited "f1,f2," ",") => ["f1" "f2"]
-)
+  )
+
+(facts "about fixed-chunk"
+  (fixed-chunk "xxxyyyzzz" 3) => ["xxx" "yyyzzz"]
+  )
+
+(facts "about parse-fixed"
+  (parse-fixed "xyyzzz" [1 2 3]) => ["x" "yy" "zzz"]
+  (parse-fixed "xyyzzz" [1 2 3]) => ["x" "yy" "zzz"]
+  )
