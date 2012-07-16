@@ -25,12 +25,12 @@
   (parse-fixed [1 2 3] "xyyzz")  => ["x" "yy" nil]
   )
 
-(facts "about parse"
-  (parse "foo,bar")  => nil
-  (parse "foo,bar"
+(facts "about parse-text"
+  (parse-text "foo,bar")  => nil
+  (parse-text "foo,bar"
     (partial delimited-chunk ",")
     (partial fixed-chunk      3 )) => ["foo" "bar"]
-  (parse "foo,bar"
+  (parse-text "foo,bar"
     (partial delimited-chunk ",")
     (partial fixed-chunk      3 )
     (partial fixed-chunk      3 )) => ["foo" "bar" nil]
