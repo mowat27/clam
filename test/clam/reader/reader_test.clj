@@ -4,23 +4,27 @@
 
 
 (facts "about delimited-chunk"
-  (delimited-chunk "foo,bar,baz" ",") => ["foo" "bar,baz"]
-  (delimited-chunk "foo,bar,baz" ",bar,") => ["foo" "baz"]
+  (delimited-chunk ","     "foo,bar,baz") => ["foo" "bar,baz"]
+  (delimited-chunk ",bar," "foo,bar,baz") => ["foo" "baz"]
   )
 
 (facts "about parse-delimited"
-  (parse-delimited "f1|" "|") => ["f1"]
-  (parse-delimited "f1," ",") => ["f1"]
-  (parse-delimited "f1,f2," ",") => ["f1" "f2"]
+  (parse-delimited "|" "f1|")    => ["f1"]
+  (parse-delimited "," "f1,")    => ["f1"]
+  (parse-delimited "," "f1,f2,") => ["f1" "f2"]
   )
 
 (facts "about fixed-chunk"
-  (fixed-chunk "xxxyyyzzz" 3) => ["xxx" "yyyzzz"]
-  (fixed-chunk "xxxyyyzzz" 3 6) => ["xxx" ""]
-  (fixed-chunk "xx" 3) => nil
+  (fixed-chunk 3 "xxxyyyzzz")   => ["xxx" "yyyzzz"]
+  (fixed-chunk 3 6 "xxxyyyzzz") => ["xxx" ""]
+  (fixed-chunk 3 "xx")          => nil
   )
 
 (facts "about parse-fixed"
-  (parse-fixed "xyyzzz" [1 2 3]) => ["x" "yy" "zzz"]
-  (parse-fixed "xyyzz" [1 2 3]) => ["x" "yy" nil]
+  (parse-fixed [1 2 3] "xyyzzz") => ["x" "yy" "zzz"]
+  (parse-fixed [1 2 3] "xyyzz")  => ["x" "yy" nil]
+  )
+
+(facts "about parse-mixed"
+  (parse-mixed "foo,bar") => nil
   )
