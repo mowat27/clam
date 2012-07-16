@@ -2,7 +2,7 @@
   (:use midje.sweet
         clam.reader))
 
-
+;; Chunkers
 (facts "about delimited-chunk"
   (delimited-chunk ","     "foo,bar,baz") => ["foo" "bar,baz"]
   (delimited-chunk ",bar," "foo,bar,baz") => ["foo" "baz"]
@@ -20,6 +20,7 @@
   (fixed-chunk 3 "xx")          => nil
   )
 
+;; Parsers
 (facts "about parse-fixed"
   (parse-fixed [1 2 3] "xyyzzz") => ["x" "yy" "zzz"]
   (parse-fixed [1 2 3] "xyyzz")  => ["x" "yy" nil]
@@ -34,4 +35,12 @@
     (partial delimited-chunk ",")
     (partial fixed-chunk      3 )
     (partial fixed-chunk      3 )] "foo,bar" ) => ["foo" "bar" nil]
+  )
+
+;; Format definitions
+(facts "about record-format"
+  (let [rf (record-format
+              [:f1 {:delimiter ","}]
+              [:f2 {:length     3 }])]
+    (rf :read "foo,bar") => [{:f1 "foo" :f2 "bar"}])
   )

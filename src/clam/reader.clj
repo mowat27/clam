@@ -1,6 +1,8 @@
 (ns clam.reader)
 
-(declare parse-text)
+(declare fixed-chunk delimited-chunk parse-text parse-delimited parse-fixed record-format)
+
+;; Chunkers
 
 (defn fixed-chunk
   ([chunk-size text ] (fixed-chunk chunk-size 0 text))
@@ -13,6 +15,9 @@
 (defn delimited-chunk [delimiter text]
   (let [chunk-size (.indexOf text delimiter)]
     (fixed-chunk chunk-size (count delimiter) text)))
+
+
+;; Parsers
 
 (defn parse-delimited [delimiter text]
   (if (empty? text)
@@ -36,3 +41,9 @@
             field     (first chunk)
             remainder (last chunk)]
         (cons field (parse-text (rest chunkers) remainder))))))
+
+
+;; Generators
+
+(defn record-format [& field-definitions]
+  (fn [op text] [{:f1 "foo" :f2 "bar"}]))
