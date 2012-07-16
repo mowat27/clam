@@ -18,9 +18,10 @@
 
 (facts "about fixed-chunk"
   (fixed-chunk "xxxyyyzzz" 3) => ["xxx" "yyyzzz"]
+  (fixed-chunk "xx" 3) => nil
   )
 
 (facts "about parse-fixed"
   (parse-fixed "xyyzzz" [1 2 3]) => ["x" "yy" "zzz"]
-  (parse-fixed "xyyzzz" [1 2 3]) => ["x" "yy" "zzz"]
+  (parse-fixed "xyyzz" [1 2 3]) => ["x" "yy" nil]
   )

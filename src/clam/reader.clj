@@ -10,8 +10,9 @@
     (map (partial apply str))
     (filter (partial not= delimiter))))
 
-(defn fixed-chunk [text size]
-  [(subs text 0 size) (subs text size)])
+(defn fixed-chunk [text chunk-size]
+  (if (>= (count text) chunk-size)
+    [(subs text 0 chunk-size) (subs text chunk-size)]))
 
 (defn parse-fixed [text field-lengths]
   (if (empty? field-lengths)
