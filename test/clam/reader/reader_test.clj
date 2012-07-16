@@ -12,6 +12,7 @@
 
 (facts "about delimited-chunk"
   (delimited-chunk "foo,bar,baz" ",") => ["foo" "bar,baz"]
+  (delimited-chunk "foo,bar,baz" ",bar,") => ["foo" "baz"]
   )
 
 (facts "about parse-delimited"
@@ -22,6 +23,7 @@
 
 (facts "about fixed-chunk"
   (fixed-chunk "xxxyyyzzz" 3) => ["xxx" "yyyzzz"]
+  (fixed-chunk "xxxyyyzzz" 3 6) => ["xxx" ""]
   (fixed-chunk "xx" 3) => nil
   )
 
