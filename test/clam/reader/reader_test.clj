@@ -25,6 +25,13 @@
   (parse-fixed [1 2 3] "xyyzz")  => ["x" "yy" nil]
   )
 
-(facts "about parse-mixed"
-  (parse-mixed "foo,bar") => nil
+(facts "about parse"
+  (parse "foo,bar")  => nil
+  (parse "foo,bar"
+    (partial delimited-chunk ",")
+    (partial fixed-chunk      3 )) => ["foo" "bar"]
+  (parse "foo,bar"
+    (partial delimited-chunk ",")
+    (partial fixed-chunk      3 )
+    (partial fixed-chunk      3 )) => ["foo" "bar" nil]
   )

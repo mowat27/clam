@@ -29,4 +29,11 @@
           remainder (last        chunk) ]
       (cons field (parse-fixed (rest field-lengths) remainder)))))
 
-(defn parse-mixed [text & chunkers])
+(defn parse [text & chunkers]
+  (if (empty? chunkers)
+    nil
+    (let [chunker   (first chunkers)
+          chunk     (chunker text)
+          field     (first chunk)
+          remainder (last chunk)]
+      (cons field (apply parse remainder (rest chunkers))))))
