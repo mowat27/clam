@@ -3,8 +3,9 @@
 (defn equal-strings? [& args]
   (apply = (map str args)))
 
-(defn read-row [text delimiter]
-  (filter (partial not= delimiter)
-    (map (partial apply str)
-      (partition-by (partial equal-strings? delimiter) text))))
-
+(defn parse-delimited [text delimiter]
+  (->>
+    text
+    (partition-by (partial equal-strings? delimiter))
+    (map (partial apply str))
+    (filter (partial not= delimiter))))

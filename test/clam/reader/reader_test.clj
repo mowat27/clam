@@ -10,8 +10,8 @@
   (equal-strings? "x" "y") => false
   )
 
-(facts "about read-row"
-  (read-row "f1|" "|") => ["f1"]
-  (read-row "f1," ",") => ["f1"]
-  (read-row "f1,f2," ",") => ["f1" "f2"]
+(facts "about parse-delimited"
+  (parse-delimited "f1|" "|") => ["f1"]
+  (parse-delimited "f1," ",") => ["f1"]
+  (parse-delimited "f1,f2," ",") => ["f1" "f2"]
 )
