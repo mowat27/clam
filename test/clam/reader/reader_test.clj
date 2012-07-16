@@ -2,13 +2,6 @@
   (:use midje.sweet
         clam.reader))
 
-(facts "about equal-strings?"
-  (equal-strings? "x" "x") => true
-  (equal-strings? "x" \x) => true
-  (equal-strings? \x  "x") => true
-  (equal-strings? \x  "x" "x") => true
-  (equal-strings? "x" "y") => false
-  )
 
 (facts "about delimited-chunk"
   (delimited-chunk "foo,bar,baz" ",") => ["foo" "bar,baz"]
