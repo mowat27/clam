@@ -1,6 +1,8 @@
 (ns clam.reader)
 
-(declare fixed-chunk delimited-chunk parse-text parse-delimited parse-fixed record-format)
+(declare fixed-chunk delimited-chunk
+         parse-text parse-delimited parse-fixed
+         record-format chunker-for)
 
 ;; Chunkers
 
@@ -42,8 +44,17 @@
             remainder (last chunk)]
         (cons field (parse-text (rest chunkers) remainder))))))
 
-
 ;; Generators
+(defn chunker-for [field-args]
+  (if (:delimiter field-args)
+    (partial delimited-chunk (:delimiter field-args))
+    (partial fixed-chunk     (:length field-args))))
+
 
 (defn record-format [& field-definitions]
-  (fn [op text] [{:f1 "foo" :f2 "bar"}]))
+  (let [field-names (map first  field-definitions)
+        field-args  (map second field-definitions)
+        chunkers    (map chunker-for field-args)]
+    (fn [text]
+      (let [values (parse-text chunkers text)]
+        [(apply hash-map (interleave field-names values))]))))

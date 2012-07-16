@@ -39,8 +39,11 @@
 
 ;; Format definitions
 (facts "about record-format"
-  (let [rf (record-format
-              [:f1 {:delimiter ","}]
-              [:f2 {:length     3 }])]
-    (rf :read "foo,bar") => [{:f1 "foo" :f2 "bar"}])
+  (def rf (record-format
+            [:f1 {:delimiter ","}]
+            [:f2 {:length     3 }]))
+
+  (rf "foo,bar") => [{:f1 "foo" :f2 "bar"}]
   )
+
+
