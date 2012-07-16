@@ -1,5 +1,7 @@
 (ns clam.reader)
 
+(declare parse-text)
+
 (defn fixed-chunk
   ([chunk-size text ] (fixed-chunk chunk-size 0 text))
   ([chunk-size ignore-after text]
@@ -21,19 +23,16 @@
       (cons field (parse-delimited delimiter remainder)))))
 
 (defn parse-fixed [field-lengths text]
-  (if (empty? field-lengths)
-    nil
-    (let [len       (first       field-lengths)
-          chunk     (fixed-chunk len text)
-          field     (first       chunk)
-          remainder (last        chunk) ]
-      (cons field (parse-fixed (rest field-lengths) remainder)))))
+  (let [chunkers (map (fn [len] (partial fixed-chunk len)) field-lengths)]
+    (parse-text chunkers text)))
 
-(defn parse-text [text & chunkers]
-  (if (empty? chunkers)
-    nil
-    (let [chunker   (first chunkers)
-          chunk     (chunker text)
-          field     (first chunk)
-          remainder (last chunk)]
-      (cons field (apply parse-text remainder (rest chunkers))))))
+(defn parse-text
+  ([text] (parse-text [] text))
+  ([chunkers text]
+    (if (empty? chunkers)
+      nil
+      (let [chunker   (first chunkers)
+            chunk     (chunker text)
+            field     (first chunk)
+            remainder (last chunk)]
+        (cons field (parse-text (rest chunkers) remainder))))))

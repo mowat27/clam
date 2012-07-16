@@ -26,12 +26,12 @@
   )
 
 (facts "about parse-text"
-  (parse-text "foo,bar")  => nil
-  (parse-text "foo,bar"
+  (parse-text "foo,bar")            => nil
+  (parse-text [
     (partial delimited-chunk ",")
-    (partial fixed-chunk      3 )) => ["foo" "bar"]
-  (parse-text "foo,bar"
+    (partial fixed-chunk      3 )] "foo,bar" ) => ["foo" "bar"]
+  (parse-text [
     (partial delimited-chunk ",")
     (partial fixed-chunk      3 )
-    (partial fixed-chunk      3 )) => ["foo" "bar" nil]
+    (partial fixed-chunk      3 )] "foo,bar" ) => ["foo" "bar" nil]
   )
