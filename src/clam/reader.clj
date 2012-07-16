@@ -14,6 +14,11 @@
   (if (>= (count text) chunk-size)
     [(subs text 0 chunk-size) (subs text chunk-size)]))
 
+(defn delimited-chunk [text delimiter]
+  (let [chunk-size (.indexOf text delimiter)]
+    [(subs text 0 chunk-size) (subs text (inc chunk-size))]
+  ))
+
 (defn parse-fixed [text field-lengths]
   (if (empty? field-lengths)
     nil

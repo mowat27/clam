@@ -10,6 +10,10 @@
   (equal-strings? "x" "y") => false
   )
 
+(facts "about delimited-chunk"
+  (delimited-chunk "foo,bar,baz" ",") => ["foo" "bar,baz"]
+  )
+
 (facts "about parse-delimited"
   (parse-delimited "f1|" "|") => ["f1"]
   (parse-delimited "f1," ",") => ["f1"]
