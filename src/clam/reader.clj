@@ -46,10 +46,10 @@
 
 ;; Generators
 (defn chunker-for [field-args]
-  (if (:delimiter field-args)
-    (partial delimited-chunk (:delimiter field-args))
-    (partial fixed-chunk     (:length field-args))))
-
+  (cond
+    (:delimiter field-args) (partial delimited-chunk (:delimiter field-args))
+    (:length    field-args) (partial fixed-chunk     (:length    field-args))
+    :else nil))
 
 (defn record-format [& field-definitions]
   (let [field-names (map first  field-definitions)

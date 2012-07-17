@@ -46,4 +46,5 @@
   (rf "foo,bar") => [{:f1 "foo" :f2 "bar"}]
   )
 
+(fact (chunker-for {:blah 99}) => nil)
 
