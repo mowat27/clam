@@ -20,18 +20,6 @@
 
 
 ;; Parsers
-(defn parse-delimited [delimiter text]
-  (if (empty? text)
-    nil
-    (let [chunk     (delimited-chunk delimiter text)
-          field     (first       chunk)
-          remainder (second        chunk) ]
-      (cons field (parse-delimited delimiter remainder)))))
-
-(defn parse-fixed [field-lengths text]
-  (let [chunkers (map (fn [len] (partial fixed-chunk len)) field-lengths)]
-    (parse-text chunkers text)))
-
 (defn parse-text
   ([text] (parse-text [] text))
   ([chunkers text]

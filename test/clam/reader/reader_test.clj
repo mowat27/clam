@@ -8,12 +8,6 @@
   (delimited-chunk ",bar," "foo,bar,baz") => ["foo" "baz", 8]
   )
 
-(facts "about parse-delimited"
-  (parse-delimited "|" "f1|")    => ["f1"]
-  (parse-delimited "," "f1,")    => ["f1"]
-  (parse-delimited "," "f1,f2,") => ["f1" "f2"]
-  )
-
 (facts "about fixed-chunk"
   (fixed-chunk 3 "xxxyyyzzz")   => ["xxx" "yyyzzz" 3]
   (fixed-chunk 3 6 "xxxyyyzzz") => ["xxx" "" 9]
@@ -21,10 +15,6 @@
   )
 
 ;; Parsers
-(facts "about parse-fixed"
-  (parse-fixed [1 2 3] "xyyzzz") => ["x" "yy" "zzz"]
-  (parse-fixed [1 2 3] "xyyzz")  => ["x" "yy" nil]
-  )
 
 (facts "about parse-text"
   (parse-text "foo,bar")            => nil
