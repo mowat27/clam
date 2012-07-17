@@ -43,7 +43,8 @@
             [:f1 {:delimiter ","}]
             [:f2 {:length     3 }]))
 
-  (rf "foo,bar") => [{:f1 "foo" :f2 "bar"}]
+  (rf "foo,bar")        => [{:f1 "foo" :f2 "bar"}]
+  (rf "foo,barbop,baz") => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
   )
 
 (fact (chunker-for {:blah 99}) => nil)

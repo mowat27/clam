@@ -5,7 +5,6 @@
          record-format chunker-for)
 
 ;; Chunkers
-
 (defn fixed-chunk
   ([chunk-size text ] (fixed-chunk chunk-size 0 text))
   ([chunk-size ignore-after text]
@@ -20,7 +19,6 @@
 
 
 ;; Parsers
-
 (defn parse-delimited [delimiter text]
   (if (empty? text)
     nil
@@ -55,6 +53,18 @@
   (let [field-names (map first  field-definitions)
         field-args  (map second field-definitions)
         chunkers    (map chunker-for field-args)]
-    (fn [text]
+
+    (defn parse-row [text]
       (let [values (parse-text chunkers text)]
-        [(apply hash-map (interleave field-names values))]))))
+        (apply hash-map (interleave field-names values))))
+
+    (defn parse-rows [text]
+      (if (empty? text)
+        nil
+        (let [row (parse-row text)]
+          (cons
+            row
+            (parse-rows (->> (apply str (vals row)) count inc (subs text)))))))
+
+    (fn [text] (parse-rows text))
+  ))
