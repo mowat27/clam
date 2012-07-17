@@ -11,7 +11,8 @@
     (if (>= (count text) chunk-size)
       (vector
         (subs text 0 chunk-size)
-        (subs text (+ chunk-size ignore-after))))))
+        (subs text (+ chunk-size ignore-after))
+        (+ chunk-size ignore-after)))))
 
 (defn delimited-chunk [delimiter text]
   (let [chunk-size (.indexOf text delimiter)]
@@ -24,7 +25,7 @@
     nil
     (let [chunk     (delimited-chunk delimiter text)
           field     (first       chunk)
-          remainder (last        chunk) ]
+          remainder (second        chunk) ]
       (cons field (parse-delimited delimiter remainder)))))
 
 (defn parse-fixed [field-lengths text]
@@ -39,7 +40,7 @@
       (let [chunker   (first chunkers)
             chunk     (chunker text)
             field     (first chunk)
-            remainder (last chunk)]
+            remainder (second chunk)]
         (cons field (parse-text (rest chunkers) remainder))))))
 
 ;; Generators

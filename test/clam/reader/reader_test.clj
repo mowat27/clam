@@ -4,8 +4,8 @@
 
 ;; Chunkers
 (facts "about delimited-chunk"
-  (delimited-chunk ","     "foo,bar,baz") => ["foo" "bar,baz"]
-  (delimited-chunk ",bar," "foo,bar,baz") => ["foo" "baz"]
+  (delimited-chunk ","     "foo,bar,baz") => ["foo" "bar,baz", 4]
+  (delimited-chunk ",bar," "foo,bar,baz") => ["foo" "baz", 8]
   )
 
 (facts "about parse-delimited"
@@ -15,8 +15,8 @@
   )
 
 (facts "about fixed-chunk"
-  (fixed-chunk 3 "xxxyyyzzz")   => ["xxx" "yyyzzz"]
-  (fixed-chunk 3 6 "xxxyyyzzz") => ["xxx" ""]
+  (fixed-chunk 3 "xxxyyyzzz")   => ["xxx" "yyyzzz" 3]
+  (fixed-chunk 3 6 "xxxyyyzzz") => ["xxx" "" 9]
   (fixed-chunk 3 "xx")          => nil
   )
 
