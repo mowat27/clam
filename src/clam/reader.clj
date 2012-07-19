@@ -20,18 +20,7 @@
 
 
 ;; Parsers
-(defn parse-text
-  ([text] (parse-text [] text))
-  ([chunkers text]
-    (if (empty? chunkers)
-      nil
-      (let [chunker   (first chunkers)
-            chunk     (chunker text)
-            field     (first chunk)
-            remainder (second chunk)]
-        (cons field (parse-text (rest chunkers) remainder))))))
-
-(defn get-chunk [chunker args]
+(defn read-chunk [chunker args]
   (if (string? args)
     (let [[field remainder length] (chunker args)]
       [[field] remainder])
@@ -40,7 +29,15 @@
         (concat row [field]) remainder))))
 
 (defn read-row [chunkers text]
-  (reduce #(get-chunk %2 %1) (cons text chunkers)))
+  (reduce #(read-chunk %2 %1) (cons text chunkers)))
+
+(defn read-all-rows [chunkers text]
+  (if (empty? text)
+    nil
+    (let [[row remainder] (read-row chunkers text)]
+      (cons
+        row
+        (read-all-rows chunkers remainder)))))
 
 ;; Generators
 (defn chunker-for [field-args]
@@ -53,14 +50,6 @@
   (let [field-names (map first  field-definitions)
         field-args  (map second field-definitions)
         chunkers    (map chunker-for field-args)]
-
-    (defn parse-rows [text]
-      (if (empty? text)
-        nil
-        (let [[row remainder] (read-row chunkers text)]
-          (cons
-            (apply hash-map (interleave field-names row))
-            (parse-rows remainder)))))
-
-    (fn [text] (parse-rows text))
-  ))
+    (fn [text]
+      (for [row (read-all-rows chunkers text)]
+        (apply hash-map (interleave field-names row))))))
