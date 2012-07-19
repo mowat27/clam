@@ -2,10 +2,18 @@
   (:use midje.sweet
         clam.reader))
 
+(def comma-chunker   (partial delimited-chunk ","))
+(def newline-chunker (partial delimited-chunk "\n"))
+(def comma-chunkers  (repeat 2 comma-chunker))
+(def csv-chunkers    [comma-chunker newline-chunker])
+
 ;; Chunkers
 (facts "about delimited-chunk"
   (delimited-chunk ","     "foo,bar,baz") => ["foo" "bar,baz", 4]
   (delimited-chunk ",bar," "foo,bar,baz") => ["foo" "baz", 8]
+  (delimited-chunk "\n" "foo\n") => ["foo" "", 4]
+  (delimited-chunk "\n" "foo
+") => ["foo" "", 4]
   )
 
 (facts "about fixed-chunk"
@@ -16,20 +24,21 @@
 
 ;; Parsers
 (facts "about read-chunk"
-  (def chunker (partial delimited-chunk ","))
-  (read-chunk chunker "foo,bar,bop,baz,")        => [["foo"] "bar,bop,baz,"]
-  (read-chunk chunker [["foo"] "bar,bop,baz,"])  => [["foo" "bar"] "bop,baz,"]
+  (read-chunk comma-chunker   "foo,bar,bop,baz,")        => [["foo"] "bar,bop,baz,"]
+  (read-chunk comma-chunker   [["foo"] "bar,bop,baz,"])  => [["foo" "bar"] "bop,baz,"]
+  (read-chunk newline-chunker "foo\nbar,bop,baz,")       => [["foo"] "bar,bop,baz,"]
+  (read-chunk newline-chunker [["foo"] "bar\nbop,baz,"]) => [["foo" "bar"] "bop,baz,"]
   )
 
 (facts "about read-row"
-  (def chunkers [(partial delimited-chunk ",") (partial delimited-chunk ",")])
-  (read-row chunkers "foo,bar,") => [["foo" "bar"] , ""]
-  (read-row chunkers "foo,bar,bop,baz,") => [["foo" "bar"] "bop,baz,"]
+  (read-row comma-chunkers "foo,bar,")         => [["foo" "bar"] , ""]
+  (read-row comma-chunkers "foo,bar,bop,baz,") => [["foo" "bar"] "bop,baz,"]
+  (read-row csv-chunkers "foo,bar\nbop,baz\n") => [["foo" "bar"] "bop,baz\n"]
   )
 
 (facts "about read-all-rows"
-  (def chunkers [(partial delimited-chunk ",") (partial delimited-chunk ",")])
-  (read-all-rows chunkers "foo,bar,bop,baz,") => [["foo" "bar"] ["bop" "baz"]]
+  (read-all-rows comma-chunkers "foo,bar,bop,baz,") => [["foo" "bar"] ["bop" "baz"]]
+  (read-all-rows csv-chunkers   "foo,bar\nbop,baz\n") => [["foo" "bar"] ["bop" "baz"]]
   )
 
 
@@ -39,8 +48,14 @@
             [:f1 {:delimiter ","}]
             [:f2 {:length     3 }]))
 
+  (def csv-format (record-format
+            [:f1 {:delimiter ","}]
+            [:f2 {:delimiter "\n" }]))
+
   (rf "foo,bar")        => [{:f1 "foo" :f2 "bar"}]
   (rf "foo,barbop,baz") => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
+
+  (csv-format "foo,bar\nbop,baz\n") => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
   )
 
 (fact (chunker-for {:blah 99}) => nil)
