@@ -15,7 +15,6 @@
   )
 
 ;; Parsers
-
 (facts "about parse-text"
   (parse-text "foo,bar")            => nil
   (parse-text [
@@ -25,6 +24,20 @@
     (partial delimited-chunk ",")
     (partial fixed-chunk      3 )
     (partial fixed-chunk      3 )] "foo,bar" ) => ["foo" "bar" nil]
+  )
+
+(facts "about read-row"
+  (def chunkers [(partial delimited-chunk ",") (partial delimited-chunk ",")])
+  (read-row chunkers "foo,bar,") => [["foo" "bar"] , ""]
+  (read-row chunkers "foo,bar,bop,baz,") => [["foo" "bar"] , "bop,baz,"]
+  )
+
+(facts "about get-chunk"
+  (def chunker (partial delimited-chunk ","))
+  (get-chunk chunker
+    "foo,bar,bop,baz,")        => [["foo"] "bar,bop,baz,"]
+  (get-chunk chunker
+    [["foo"] "bar,bop,baz,"])  => [["foo" "bar"] "bop,baz,"]
   )
 
 ;; Format definitions

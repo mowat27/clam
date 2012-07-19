@@ -31,6 +31,17 @@
             remainder (second chunk)]
         (cons field (parse-text (rest chunkers) remainder))))))
 
+(defn get-chunk [chunker args]
+  (if (string? args)
+    (let [[field remainder length] (chunker args)]
+      [[field] remainder])
+    (let [[row text] args [field remainder length] (chunker text)]
+      (vector
+        (concat row [field]) remainder))))
+
+(defn read-row [chunkers text]
+  (reduce #(get-chunk %2 %1) (cons text chunkers)))
+
 ;; Generators
 (defn chunker-for [field-args]
   (cond
@@ -43,17 +54,13 @@
         field-args  (map second field-definitions)
         chunkers    (map chunker-for field-args)]
 
-    (defn parse-row [text]
-      (let [values (parse-text chunkers text)]
-        (apply hash-map (interleave field-names values))))
-
     (defn parse-rows [text]
       (if (empty? text)
         nil
-        (let [row (parse-row text)]
+        (let [[row remainder] (read-row chunkers text)]
           (cons
-            row
-            (parse-rows (->> (apply str (vals row)) count inc (subs text)))))))
+            (apply hash-map (interleave field-names row))
+            (parse-rows remainder)))))
 
     (fn [text] (parse-rows text))
   ))
