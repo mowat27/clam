@@ -52,4 +52,4 @@
         chunkers    (map chunker-for field-args)]
     (fn [text]
       (for [row (read-all-rows chunkers text)]
-        (apply hash-map (interleave field-names row))))))
+        (->> row (interleave field-names) (apply hash-map))))))
