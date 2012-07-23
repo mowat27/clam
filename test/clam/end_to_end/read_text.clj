@@ -15,6 +15,6 @@ sit|amet,|consectetur|
       [:newline {:length     1 }]]))
 
 (fact
-  (lorem-record pipe_delim_text) => [
+  (lorem-record :read pipe_delim_text) => [
     {:field1 "Lorem" :field2 "ipsum" :field3 "dolor",       :newline "\n"}
     {:field1 "sit"   :field2 "amet," :field3 "consectetur", :newline "\n"} ])

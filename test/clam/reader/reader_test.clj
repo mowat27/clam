@@ -14,12 +14,13 @@
   (delimited-chunk "\n" "foo\n") => ["foo" "", 4]
   (delimited-chunk "\n" "foo
 ") => ["foo" "", 4]
+  (delimited-chunk "," "delimiter-missing") => (throws Exception #"Unexpected EOF. Looking for ',' in 'delimiter-missing'")
   )
 
 (facts "about fixed-chunk"
   (fixed-chunk 3 "xxxyyyzzz")   => ["xxx" "yyyzzz" 3]
   (fixed-chunk 3 6 "xxxyyyzzz") => ["xxx" "" 9]
-  (fixed-chunk 3 "xx")          => nil
+  (fixed-chunk 3 "xx") => (throws Exception #"Unexpected EOF. Expected 'xx' to be at least 3 characters long")
   )
 
 ;; Parsers
@@ -31,9 +32,9 @@
   )
 
 (facts "about read-row"
-  (read-row comma-chunkers "foo,bar,")         => [["foo" "bar"] , ""]
-  (read-row comma-chunkers "foo,bar,bop,baz,") => [["foo" "bar"] "bop,baz,"]
-  (read-row csv-chunkers "foo,bar\nbop,baz\n") => [["foo" "bar"] "bop,baz\n"]
+  (read-row comma-chunkers "foo,bar,")              => [["foo" "bar"] , ""]
+  (read-row comma-chunkers "foo,bar,bop,baz,")      => [["foo" "bar"] "bop,baz,"]
+  (read-row csv-chunkers   "foo,bar\nbop,baz\n")    => [["foo" "bar"] "bop,baz\n"]
   )
 
 (facts "about read-all-rows"
@@ -52,10 +53,11 @@
             [:f1 {:delimiter ","}]
             [:f2 {:delimiter "\n" }]))
 
-  (rf "foo,bar")        => [{:f1 "foo" :f2 "bar"}]
-  (rf "foo,barbop,baz") => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
+  (rf         :read "foo,bar")            => [{:f1 "foo" :f2 "bar"}]
+  (rf         :read "foo,barbop,baz")     => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
+  (csv-format :read "foo,bar\nbop,baz\n") => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
 
-  (csv-format "foo,bar\nbop,baz\n") => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
+  (rf :field-defs "") => [[:f1 {:delimiter ","}] [:f2 {:length 3}]]
   )
 
 (fact (chunker-for {:blah 99}) => nil)

@@ -12,12 +12,15 @@
       (vector
         (subs text 0 chunk-size)
         (subs text (+ chunk-size ignore-after))
-        (+ chunk-size ignore-after)))))
+        (+ chunk-size ignore-after))
+      (throw (Exception. (str "Unexpected EOF. Expected '" text "' to be at least " chunk-size " characters long.")))
+    )))
 
 (defn delimited-chunk [delimiter text]
   (let [chunk-size (.indexOf text delimiter)]
-    (fixed-chunk chunk-size (count delimiter) text)))
-
+    (if (> chunk-size -1)
+      (fixed-chunk chunk-size (count delimiter) text)
+      (throw (Exception. (str "Unexpected EOF. Looking for '" delimiter "' in '" text "'."))))))
 
 ;; Parsers
 (defn read-chunk [chunker args]
@@ -50,6 +53,11 @@
   (let [field-names (map first  field-definitions)
         field-args  (map second field-definitions)
         chunkers    (map chunker-for field-args)]
-    (fn [text]
-      (for [row (read-all-rows chunkers text)]
-        (->> row (interleave field-names) (apply hash-map))))))
+    (fn [op text]
+      (cond
+        (= op :read)
+          (for [row (read-all-rows chunkers text)]
+            (->> row (interleave field-names) (apply hash-map)))
+        (= op :field-defs)
+          field-definitions))))
+
