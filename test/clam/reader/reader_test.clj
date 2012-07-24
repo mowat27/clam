@@ -57,7 +57,7 @@
   (rf         :read "foo,barbop,baz")     => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
   (csv-format :read "foo,bar\nbop,baz\n") => [{:f1 "foo" :f2 "bar"} {:f1 "bop" :f2 "baz"}]
 
-  (rf :field-defs "") => [[:f1 {:delimiter ","}] [:f2 {:length 3}]]
+  (rf :field-defs) => [[:f1 {:delimiter ","}] [:f2 {:length 3}]]
   )
 
 (fact (chunker-for {:blah 99}) => nil)

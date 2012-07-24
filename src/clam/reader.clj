@@ -53,11 +53,13 @@
   (let [field-names (map first  field-definitions)
         field-args  (map second field-definitions)
         chunkers    (map chunker-for field-args)]
-    (fn [op text]
+
+    (fn [op & args]
       (cond
         (= op :read)
-          (for [row (read-all-rows chunkers text)]
-            (->> row (interleave field-names) (apply hash-map)))
-        (= op :field-defs)
-          field-definitions))))
+          (let [[text] args]
+            (for [row (read-all-rows chunkers text)]
+              (->> row (interleave field-names) (apply hash-map))))
+        (= op :field-defs) field-definitions)))
+    )
 
