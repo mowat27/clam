@@ -1,9 +1,7 @@
 (ns clam.perf.read-tsv
   (:use clam.core))
 
-(def airport
-  (defrecstruct
-    (concat
+(def airport-fields (into [] (concat
       (map #(vector %1 {:delimiter "\t"}) [
         :name
         :id
@@ -20,7 +18,9 @@
         :airlines
         :icao
         :iata ])
-      [:newline {:length 1 }])))
+      [[:newline {:length 1 }]])))
+
+(def airport (defrecstruct airport-fields))
 
 (defn gen-row [num-fields]
     (str (apply str (repeat num-fields "foobar\t")) "\n"))

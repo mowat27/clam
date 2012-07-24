@@ -23,6 +23,7 @@
       (throw (Exception. (str "Unexpected EOF. Looking for '" delimiter "' in '" text "'."))))))
 
 ;; Parsers
+;; ---------------------------------------------------
 (defmulti read-chunk
   (fn [_ args]
     (cond
@@ -33,11 +34,12 @@
   (let [[field remainder length] (chunker text)]
     [[field] remainder]))
 
-(defmethod read-chunk :collection [chunker args]
-  (let [[row text]               args
+(defmethod read-chunk :collection [chunker coll]
+  (let [[row text]               coll
         [field remainder length] (chunker text)]
       (vector
         (concat row [field]) remainder)))
+;; ---------------------------------------------------
 
 (defn read-row [chunkers text]
   (reduce #(read-chunk %2 %1) (cons text chunkers)))
