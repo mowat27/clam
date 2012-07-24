@@ -23,13 +23,17 @@
       (throw (Exception. (str "Unexpected EOF. Looking for '" delimiter "' in '" text "'."))))))
 
 ;; Parsers
-(defmulti read-chunk (fn [_ args] (class args)))
+(defmulti read-chunk
+  (fn [_ args]
+    (cond
+      (string? args) :string
+      (coll?   args) :collection)))
 
-(defmethod read-chunk String [chunker text]
+(defmethod read-chunk :string [chunker text]
   (let [[field remainder length] (chunker text)]
     [[field] remainder]))
 
-(defmethod read-chunk clojure.lang.PersistentVector [chunker args]
+(defmethod read-chunk :collection [chunker args]
   (let [[row text]               args
         [field remainder length] (chunker text)]
       (vector
