@@ -16,4 +16,16 @@
     (apply str (repeat num-rows (gen-row num-fields))))
 
 (defn airport-data [num-rows]
-    (gen-data num-rows 2000))
+    (gen-data num-rows 15))
+
+(defn timed-run [num-rows]
+    (fn [] (let [d (airport-data num-rows)]
+        (time (airport :read d)) nil)))
+
+(defn run-rows [num-rows]
+    ((timed-run num-rows)))
+
+(defn take-timings [start-at num-iterations factor]
+    (doseq [num-rows (take num-iterations (iterate (partial * factor) start-at))]
+        (println num-rows)
+        (run-rows num-rows)))
