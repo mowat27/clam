@@ -62,3 +62,9 @@
 
 (fact (chunker-for {:blah 99}) => nil)
 
+(facts "about delimited-fields"
+  (delimited-fields "," [:foo :bar]) => [ [:foo {:delimiter ","}]
+                                          [:bar {:delimiter ","}]
+                                          [:newline {:length 1}]]
+  )
+

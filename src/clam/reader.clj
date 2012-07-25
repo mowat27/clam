@@ -59,6 +59,11 @@
     (:length    field-args) (partial fixed-chunk     (:length    field-args))
     :else nil))
 
+(defn delimited-fields [delimiter field-names]
+  (concat
+    (map #(vector %1 {:delimiter delimiter}) field-names)
+    [[:newline {:length 1 }]]))
+
 (defn record-format [& field-definitions]
   (let [field-names (map first  field-definitions)
         field-args  (map second field-definitions)
