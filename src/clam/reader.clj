@@ -75,6 +75,6 @@
           (let [[text] args]
             (for [row (read-all-rows chunkers text)]
               (->> row (interleave field-names) (apply hash-map))))
-        (= op :field-defs) field-definitions)))
-    )
+        (= op :field-defs)
+          field-definitions))))
 
