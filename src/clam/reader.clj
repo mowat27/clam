@@ -2,7 +2,7 @@
 
 (declare fixed-chunk delimited-chunk
          parse-text parse-delimited parse-fixed
-         record-format chunker-for)
+         record-format chunker-for validate-field)
 
 ;; Chunkers
 (defn fixed-chunk
@@ -57,7 +57,7 @@
   (cond
     (:delimiter field-args) (partial delimited-chunk (:delimiter field-args))
     (:length    field-args) (partial fixed-chunk     (:length    field-args))
-    :else nil))
+    :else (throw (Exception. (str "Expected :delimited or :length to be specified in " field-args)))))
 
 (defn delimited-fields [delimiter field-names]
   (concat
@@ -65,9 +65,11 @@
     [[:newline {:length 1 }]]))
 
 (defn record-format [& field-definitions]
+  (doall
+    (for [field-def field-definitions] (validate-field field-def)))
   (let [field-names (map first  field-definitions)
         field-args  (map second field-definitions)
-        chunkers    (map chunker-for field-args)]
+        chunkers    (doall (map chunker-for field-args))]
 
     (fn [op & args]
       (cond
@@ -77,4 +79,14 @@
               (->> row (interleave field-names) (apply hash-map))))
         (= op :field-defs)
           field-definitions))))
+
+;; Validators
+(defn validate-field [field-def]
+  (defn vector-or-list [field-def] (or (vector? field-def) (list? field-def)))
+
+  (assert (vector-or-list field-def) (str field-def " must be a list or vector"))
+  (assert (= 2 (count field-def)) (str field-def " must have a field name and options"))
+
+  field-def)
+
 

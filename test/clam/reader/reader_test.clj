@@ -44,7 +44,12 @@
 
 
 ;; Format definitions
-(facts "about record-format"
+(facts "about record-format generator"
+  (record-format [:foo {:bad "arg"}]) => (throws Exception)
+  (record-format "some bad def")      => (throws java.lang.AssertionError)
+  )
+
+(facts "about record-format functions"
   (def rf (record-format
             [:f1 {:delimiter ","}]
             [:f2 {:length     3 }]))
@@ -60,11 +65,19 @@
   (rf :field-defs) => [[:f1 {:delimiter ","}] [:f2 {:length 3}]]
   )
 
-(fact (chunker-for {:blah 99}) => nil)
-
 (facts "about delimited-fields"
   (delimited-fields "," [:foo :bar]) => [ [:foo {:delimiter ","}]
                                           [:bar {:delimiter ","}]
                                           [:newline {:length 1}]]
+  )
+
+;; Validations
+(fact (chunker-for {:blah 99}) => (throws Exception #"Expected :delimited or :length"))
+(facts "about validate-field"
+  (validate-field [:valid-field {:delimited ","}])  => [:valid-field {:delimited ","}]
+  (validate-field '(:valid-field {:delimited ","})) => '(:valid-field {:delimited ","})
+  (validate-field "not a collection")               => (throws java.lang.AssertionError #"must be a list or vector")
+  (validate-field [{:foo 1 :bar 2}])                => (throws java.lang.AssertionError #"must have a field name and options")
+  (validate-field [:foo])                           => (throws java.lang.AssertionError #"must have a field name and options")
   )
 
