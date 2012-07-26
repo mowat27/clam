@@ -26,6 +26,12 @@
     ((timed-run num-rows)))
 
 (defn take-timings [start-at num-iterations factor]
-    (doseq [num-rows (take num-iterations (iterate (partial * factor) start-at))]
-        (println num-rows)
-        (run-rows num-rows)))
+    (map
+        (fn [num-rows] {:num-rows num-rows :timing (with-out-str (run-rows num-rows))})
+        (take num-iterations (iterate (partial * factor) start-at))))
+
+(defn add-msec [m]
+    (let [{timing :timing} m msecs (first (re-seq #"\d+\.\d+" timing))]
+        (assoc m :msecs (bigdec msecs))))
+
+(defn format-timing [m] (str (:num-rows m) " rows took " (:msecs m)))
