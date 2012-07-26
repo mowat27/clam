@@ -42,15 +42,19 @@
 ;; ---------------------------------------------------
 
 (defn read-row [chunkers text]
+  "Applies a list of functions to a string. Returns
+  a vector of fields found and any remaining text.
+  (read-row comma-chunkers \"foo,bar,bop,baz,\")  => [[\"foo\" \"bar\"] \"bop,baz,\"]"
   (reduce #(read-chunk %2 %1) (cons text chunkers)))
 
-(defn read-all-rows [chunkers text]
-  (if (empty? text)
-    nil
-    (let [[row remainder] (read-row chunkers text)]
-      (cons
-        row
-        (read-all-rows chunkers remainder)))))
+(defn read-all-rows [chunkers starting-text]
+  "Repeatedly applies chunkers to text until the end of the
+  text is reached."
+  (reverse (loop [text starting-text result []]
+    (if (empty? text)
+      result
+      (let [[row remainder] (read-row chunkers text)]
+        (recur remainder (cons row result)))))))
 
 ;; Generators
 (defn chunker-for [field-args]
