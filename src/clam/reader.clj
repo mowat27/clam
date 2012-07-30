@@ -41,20 +41,29 @@
         (concat row [field]) remainder)))
 ;; ---------------------------------------------------
 
-(defn read-row [chunkers text]
+(defn infinite-seq [s]
+  (lazy-seq (concat s (infinite-seq s))))
+
+(defn read-row
   "Applies a list of functions to a string. Returns
   a vector of fields found and any remaining text.
   (read-row comma-chunkers \"foo,bar,bop,baz,\")  => [[\"foo\" \"bar\"] \"bop,baz,\"]"
-  (reduce #(read-chunk %2 %1) (cons text chunkers)))
+  ([chunkers text]
+    (reduce #(read-chunk %2 %1) (cons text chunkers)))
+  ([[chunkers result text more]]
+    (let [end (empty? text) [row remainder] (if-not end (read-row chunkers text) [[] text])]
+      (vector chunkers (conj result row) remainder (not end)))))
+
+
 
 (defn read-all-rows [chunkers starting-text]
   "Repeatedly applies chunkers to text until the end of the
   text is reached."
-  (reverse (loop [text starting-text result []]
-    (if (empty? text)
-      result
-      (let [[row remainder] (read-row chunkers text)]
-        (recur remainder (cons row result)))))))
+  (def row-seq
+    (take-while
+      (fn [[_ _ _ more]] more)
+        (iterate read-row [chunkers [] starting-text true])))
+  ((last row-seq) 1))
 
 ;; Generators
 (defn chunker-for [field-args]

@@ -35,3 +35,18 @@
         (assoc m :msecs (bigdec msecs))))
 
 (defn format-timing [m] (str (:num-rows m) " rows took " (:msecs m)))
+
+
+;; Timings - 27 July
+;
+; user=> (run-rows 100)
+; "Elapsed time: 248.158 msecs"
+; nil
+; user=> (run-rows 1000)
+; "Elapsed time: 641.242 msecs"
+; nil
+; user=> (run-rows 10000)
+; "Elapsed time: 4463.913 msecs"
+; nil
+; user=> (run-rows 100000)
+; Bye for now!

@@ -32,13 +32,17 @@
   )
 
 (facts "about read-row"
-  (read-row comma-chunkers "foo,bar,")              => [["foo" "bar"] , ""]
-  (read-row comma-chunkers "foo,bar,bop,baz,")      => [["foo" "bar"] "bop,baz,"]
-  (read-row csv-chunkers   "foo,bar\nbop,baz\n")    => [["foo" "bar"] "bop,baz\n"]
+  (read-row comma-chunkers "foo,bar,")           => [["foo" "bar"] , ""]
+  (read-row comma-chunkers "foo,bar,bop,baz,")   => [["foo" "bar"] "bop,baz,"]
+  (read-row csv-chunkers   "foo,bar\nbop,baz\n") => [["foo" "bar"] "bop,baz\n"]
+
+  (read-row [csv-chunkers  [] "foo,bar\nbop,baz\n" true ])             => [csv-chunkers [["foo" "bar"]] "bop,baz\n" true ]
+  (read-row [csv-chunkers  [["foo" "bar"]] "bop,baz\n" true ])         => [csv-chunkers [["foo" "bar"] ["bop" "baz"]] "" true ]
+  (read-row [csv-chunkers  [["foo" "bar"] ["bop" "baz"]] "" false] )   => [csv-chunkers [["foo" "bar"] ["bop" "baz"] []] "" false ]
   )
 
 (facts "about read-all-rows"
-  (read-all-rows comma-chunkers "foo,bar,bop,baz,") => [["foo" "bar"] ["bop" "baz"]]
+  (read-all-rows comma-chunkers "foo,bar,bop,baz,")   => [["foo" "bar"] ["bop" "baz"]]
   (read-all-rows csv-chunkers   "foo,bar\nbop,baz\n") => [["foo" "bar"] ["bop" "baz"]]
   )
 
