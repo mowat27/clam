@@ -3,9 +3,18 @@
 (defn take-fixed [len [_ text]]
   [(take len text) (drop len text)])
 
-(defn field-seq [field-defs coll]
-  (defn f [[fdefs [field remainder]]]
-    [(rest fdefs) ((first fdefs) [field remainder])])
+(defn take-field [[field-defs [field remainder]]]
+  (let [take-partial (first field-defs)]
+    [ (rest field-defs) (take-partial [field remainder]) ]))
 
-  (map (fn [[_ [field _]]] field) (rest (iterate f [(cycle field-defs) [[] coll]]))))
+(defn field-seq [field-defs coll]
+  (def field-value (fn [[_ [field _]]] field))
+  (let [inf-field-defs (cycle field-defs)
+        first-field    ((first inf-field-defs) [[] coll])]
+   (map field-value (iterate take-field [(rest inf-field-defs) first-field]))))
+
+(defn row-seq [field-defs coll]
+  (partition (count field-defs) (field-seq field-defs coll)))
+
+
 
