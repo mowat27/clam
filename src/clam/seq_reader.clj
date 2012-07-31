@@ -16,5 +16,9 @@
 (defn row-seq [field-defs coll]
   (partition (count field-defs) (field-seq field-defs coll)))
 
-
+(defn record-seq [record-defs coll]
+  (let [field-names (map first record-defs)
+        field-defs (map second record-defs)]
+    (for [row (row-seq field-defs coll)]
+      (apply hash-map (interleave field-names row)))))
 
