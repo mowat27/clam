@@ -2,7 +2,15 @@
 
 (declare take-fixed)
 
-(defn take-fixed [len [_ text]] (split-at len text))
+(defmulti take-fixed
+  (fn [_ data]
+    (cond
+      (char? (first data))             :string
+      (or (vector? data) (list? data)) :collection)))
+(defmethod take-fixed :string     [len text]     (split-at len text))
+(defmethod take-fixed :collection [len [_ text]] (split-at len text))
+
+
 
 (defn take-delimited [delimiter [_ coll]]
   (let [c         (count delimiter)
