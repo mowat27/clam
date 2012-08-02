@@ -12,14 +12,18 @@
 (def baz (seq "baz"))
 
 (facts "about take-fixed"
-  (rdr/take-fixed 3 "foobar")       => [foo bar]
-  (rdr/take-fixed 3 (seq "foobar")) => [foo bar]
-  (rdr/take-fixed 3 ['() "foobar"]) => [foo bar]
+  (rdr/take-fixed 3 "foobar")        => [foo bar]
+  (rdr/take-fixed 3 (seq "foobar"))  => [foo bar]
+  (rdr/take-fixed 3 ['() "foobar"])  => [foo bar]
   (rdr/take-fixed 3 '('() "foobar")) => [foo bar]
   )
 
 (facts "about take-delimited"
-  (rdr/take-delimited (seq ",") ['() "foo,bar"]) => [foo bar]
+  (rdr/take-delimited "," "foo,bar")              => [foo bar]
+  (rdr/take-delimited "," ['() "foo,bar"])        => [foo bar]
+  (rdr/take-delimited (seq ",") "foo,bar")        => [foo bar]
+  (rdr/take-delimited (seq ",") ['() "foo,bar"])  => [foo bar]
+  (rdr/take-delimited (seq ",") '('() "foo,bar")) => [foo bar]
   )
 
 (facts "about take-field"

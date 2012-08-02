@@ -2,24 +2,26 @@
 
 (declare take-fixed)
 
-(defmulti take-fixed
-  (fn [_ data]
-    (cond
-      (char? (first data))             :string
-      (or (vector? data) (list? data)) :collection)))
-(defmethod take-fixed :string     [len text]     (split-at len text))
-(defmethod take-fixed :collection [len [_ text]] (split-at len text))
+(let [dispatcher (fn [_ data]
+                   (cond
+                     (char? (first data))             :string
+                     (or (vector? data) (list? data)) :collection))]
 
+  (defmulti  take-fixed dispatcher)
+  (defmethod take-fixed :string     [len text]     (take-fixed len [[] text]))
+  (defmethod take-fixed :collection [len [_ text]] (split-at len text))
 
-
-(defn take-delimited [delimiter [_ coll]]
-  (let [c         (count delimiter)
-        this      (->> (reductions conj [] coll)
-                       (take-while #(not (= delimiter (take-last c %))))
-                       last)
-        len       (+ c (count this))
-        remainder (drop len coll)]
-    [this remainder]))
+  (defmulti  take-delimited dispatcher)
+  (defmethod take-delimited :string     [delimiter text] (take-delimited delimiter [[] text]))
+  (defmethod take-delimited :collection [delimiter [_ coll]]
+    (let [delimiter (seq delimiter)
+          c         (count delimiter)
+          this      (->> (reductions conj [] coll)
+                         (take-while #(not (= delimiter (take-last c %))))
+                         last)
+          len       (+ c (count this))
+          remainder (drop len coll)]
+      [this remainder])))
 
 (defn take-field [[field-defs [field remainder]]]
   (let [take-partial (first field-defs)]
