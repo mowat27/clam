@@ -2,8 +2,9 @@
   (:use midje.sweet
         [clam.seq-reader :as rdr]))
 
-(def fixed-row-def    (repeat 2 (partial take-fixed 3)))
-(def fixed-record-def [[:f1 (first fixed-row-def)] [:f2 (second fixed-row-def)]])
+(def fixed-row-def     (repeat 2 (partial take-fixed 3)))
+(def delimited-row-def (repeat 2 (partial take-delimited (seq ","))))
+(def fixed-record-def  [[:f1 (first fixed-row-def)] [:f2 (second fixed-row-def)]])
 
 (def foo (seq "foo"))
 (def bar (seq "bar"))
@@ -11,11 +12,17 @@
 (def baz (seq "baz"))
 
 (facts "about take-fixed"
-  (rdr/take-fixed 3 ['() (seq "foobar")]) => [foo bar]
+  (rdr/take-fixed 3 ['() "foobar"]) => [foo bar]
+  (rdr/take-fixed 3 ['() "foobar"]) => [foo bar]
+  )
+
+(facts "about take-delimited"
+  (rdr/take-delimited (seq ",") ['() "foo,bar"]) => [foo bar]
   )
 
 (facts "about take-field"
-  (rdr/take-field [fixed-row-def [foo bar]] ) => [(rest fixed-row-def) [bar '()]]
+  (rdr/take-field [fixed-row-def [foo bar]] )        => [(rest fixed-row-def)     [bar '()]]
+  (rdr/take-field [delimited-row-def [foo "bar,"]] ) => [(rest delimited-row-def) [bar '()]]
   )
 
 (facts "about field-seq"

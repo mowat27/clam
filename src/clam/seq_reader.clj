@@ -1,7 +1,17 @@
 (ns clam.seq-reader)
 
-(defn take-fixed [len [_ text]]
-  [(take len text) (drop len text)])
+(declare take-fixed)
+
+(defn take-fixed [len [_ text]] (split-at len text))
+
+(defn take-delimited [delimiter [_ coll]]
+  (let [c         (count delimiter)
+        this      (->> (reductions conj [] coll)
+                       (take-while #(not (= delimiter (take-last c %))))
+                       last)
+        len       (+ c (count this))
+        remainder (drop len coll)]
+    [this remainder]))
 
 (defn take-field [[field-defs [field remainder]]]
   (let [take-partial (first field-defs)]
@@ -16,9 +26,15 @@
 (defn row-seq [field-defs coll]
   (partition (count field-defs) (field-seq field-defs coll)))
 
+(defn get-field-names [record-defs]
+  (map first record-defs))
+
+(defn get-field-defs [record-defs]
+  (map second record-defs))
+
 (defn record-seq [record-defs coll]
-  (let [field-names (map first record-defs)
-        field-defs (map second record-defs)]
+  (let [field-names (get-field-names record-defs)
+        field-defs  (get-field-defs  record-defs)]
     (for [row (row-seq field-defs coll)]
       (apply hash-map (interleave field-names row)))))
 

@@ -10,7 +10,6 @@
   (let [len (count d)]
     [(take-while (partial not= d) s) (rest s)]))
 
-
 (defn fixed [len [r s]]
   [(take len s) (drop len s)])
 
