@@ -14,18 +14,21 @@
   (defmulti  take-delimited dispatcher)
   (defmethod take-delimited :string     [delimiter text] (take-delimited delimiter [[] text]))
   (defmethod take-delimited :collection [delimiter [_ coll]]
-    (let [delimiter (seq delimiter)
-          c         (count delimiter)
-          this      (->> (reductions conj [] coll)
-                         (take-while #(not (= delimiter (take-last c %))))
-                         last)
-          len       (+ c (count this))
-          remainder (drop len coll)]
+    (let [delimiter     (seq delimiter)
+          c             (count delimiter)
+          not-delimiter (fn [value] (not (= delimiter (take-last c value))))
+          this          (->> (reductions conj [] coll) (take-while not-delimiter) last)
+          len           (+ c (count this))
+          remainder     (drop len coll)]
       [this remainder])))
 
-(defn take-field [[field-defs [field remainder]]]
-  (let [take-partial (first field-defs)]
-    [ (rest field-defs) (take-partial [field remainder]) ]))
+(defn take-field
+  ([field-defs coll]
+    (take-field [field-defs [[] coll]]))
+  ([[field-defs [field remainder]]]
+    (let [f (first field-defs)]
+      [(rest field-defs) (f [field remainder])])))
+
 
 (defn field-seq [field-defs coll]
   (def field-value (fn [[_ [field _]]] field))

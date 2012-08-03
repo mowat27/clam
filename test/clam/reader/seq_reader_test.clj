@@ -27,13 +27,18 @@
   )
 
 (facts "about take-field"
+  (rdr/take-field fixed-row-def "foobar")            => [(rest fixed-row-def)     [foo bar]]
+  (rdr/take-field fixed-row-def (seq "foobar"))      => [(rest fixed-row-def)     [foo bar]]
   (rdr/take-field [fixed-row-def [foo bar]] )        => [(rest fixed-row-def)     [bar '()]]
+
   (rdr/take-field [delimited-row-def [foo "bar,"]] ) => [(rest delimited-row-def) [bar '()]]
+  (rdr/take-field delimited-row-def "foo,bar")       => [(rest delimited-row-def) [foo bar]]
+  (rdr/take-field delimited-row-def (seq "foo,bar")) => [(rest delimited-row-def) [foo bar]]
   )
 
 (facts "about field-seq"
-  (take 2 (rdr/field-seq fixed-row-def "foobar"))       => [foo bar]
-  (take 4 (rdr/field-seq fixed-row-def "foobarbopbaz")) => [foo bar bop baz]
+  (take 4 (rdr/field-seq fixed-row-def "foobarbopbaz"))         => [foo bar bop baz]
+  (take 4 (rdr/field-seq delimited-row-def "foo,bar,bop,baz,")) => [foo bar bop baz]
   )
 
 (facts "about row-seq"
